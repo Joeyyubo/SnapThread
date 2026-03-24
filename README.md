@@ -1,6 +1,12 @@
+<p align="center">
+  <img src="extension/icons/icon128.png" alt="SnapThread icon" width="96" height="96" />
+</p>
+
 # SnapThread
 
 **SnapThread** is a Chrome extension (Manifest V3) for UX reviews and design walkthroughs on **localhost**, **staging**, and **preview** URLs. Capture UI with context, queue findings in a session, and share them as Markdown—or post directly to **GitHub pull requests and issues** with images that render inline in the thread.
+
+Extension toolbar / Chrome Web Store icons live under [`extension/icons/`](extension/icons/) (`icon16.png` … `icon128.png`), wired in [`manifest.json`](extension/manifest.json). Regenerate them anytime with `python3 extension/scripts/generate_icons.py` (requires Pillow).
 
 ---
 
