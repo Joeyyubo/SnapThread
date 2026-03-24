@@ -69,7 +69,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 function setCaptureBadge(on) {
   if (on) {
     chrome.action.setBadgeText({ text: "●" });
-    chrome.action.setBadgeBackgroundColor({ color: "#dc2626" });
+    chrome.action.setBadgeBackgroundColor({ color: "#2563eb" });
   } else {
     chrome.action.setBadgeText({ text: "" });
   }

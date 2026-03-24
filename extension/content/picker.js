@@ -28,9 +28,9 @@
       pointerEvents: "none",
       zIndex: "2147483647",
       boxSizing: "border-box",
-      border: "2px solid #ef4444",
+      border: "2px solid #2563eb",
       borderRadius: "4px",
-      boxShadow: "0 0 0 1px rgba(255,255,255,0.9), 0 4px 14px rgba(220,38,38,0.35)",
+      boxShadow: "0 0 0 1px rgba(255,255,255,0.9), 0 4px 14px rgba(37,99,235,0.35)",
       transition: "left 40ms ease, top 40ms ease, width 40ms ease, height 40ms ease",
     });
 
@@ -80,8 +80,8 @@
       pointerEvents: "none",
       zIndex: "2147483647",
       boxSizing: "border-box",
-      border: "2px dashed #ef4444",
-      background: "rgba(239, 68, 68, 0.12)",
+      border: "2px dashed #2563eb",
+      background: "rgba(37, 99, 235, 0.1)",
     });
 
     el.appendChild(box);
