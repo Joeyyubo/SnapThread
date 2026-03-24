@@ -1,22 +1,27 @@
 :root {
-  --ux-bg: #f4f5f7;
+  /* Light panel; brand = dark gray + red accent (matches toolbar icon) */
+  --ux-bg: #f4f4f5;
   --ux-surface: #ffffff;
-  --ux-surface-2: #f9fafb;
-  --ux-border: #e5e7eb;
-  --ux-border-strong: #d1d5db;
-  --ux-text: #111827;
-  --ux-text-secondary: #4b5563;
-  --ux-text-muted: #6b7280;
-  --ux-accent: #2563eb;
-  --ux-accent-hover: #1d4ed8;
-  --ux-accent-soft: #eff6ff;
+  --ux-surface-2: #fafafa;
+  --ux-border: #e4e4e7;
+  --ux-border-strong: #d4d4d8;
+  --ux-text: #18181b;
+  --ux-text-secondary: #52525b;
+  --ux-text-muted: #71717a;
+  --ux-ink: #27272a;
+  --ux-ink-deep: #18181b;
+  --ux-accent: #dc2626;
+  --ux-accent-hover: #b91c1c;
+  --ux-accent-soft: #fef2f2;
+  --ux-accent-ring: rgba(220, 38, 38, 0.2);
+  --ux-accent-focus: rgba(220, 38, 38, 0.18);
   --ux-danger: #b91c1c;
   --ux-danger-soft: #fef2f2;
   --ux-radius: 10px;
   --ux-radius-sm: 8px;
-  --ux-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
-  --ux-shadow-card: 0 1px 3px rgba(15, 23, 42, 0.06),
-    0 1px 2px rgba(15, 23, 42, 0.04);
+  --ux-shadow: 0 1px 2px rgba(24, 24, 27, 0.05);
+  --ux-shadow-card: 0 1px 3px rgba(24, 24, 27, 0.06),
+    0 1px 2px rgba(24, 24, 27, 0.04);
   --ux-font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
 }
@@ -68,7 +73,7 @@ html.in-side-panel .panel {
 .brand-mark {
   display: flex;
   flex-shrink: 0;
-  filter: drop-shadow(0 1px 2px rgba(37, 99, 235, 0.25));
+  filter: drop-shadow(0 1px 2px rgba(220, 38, 38, 0.22));
 }
 
 .brand-text {
@@ -227,7 +232,7 @@ html.in-side-panel .panel {
 .textarea:focus {
   outline: none;
   border-color: var(--ux-accent);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  box-shadow: 0 0 0 3px var(--ux-accent-focus);
 }
 
 .field-hint {
@@ -291,10 +296,6 @@ html.in-side-panel .panel {
   gap: 8px;
 }
 
-.stack-actions .btn.secondary.wide {
-  font-size: 12px;
-}
-
 .btn-text-link {
   background: transparent;
   border: none;
@@ -344,13 +345,13 @@ html.in-side-panel .panel {
 }
 
 .btn.primary {
-  background: linear-gradient(180deg, #3b82f6 0%, var(--ux-accent) 100%);
+  background: linear-gradient(180deg, #3f3f46 0%, var(--ux-ink-deep) 100%);
   color: #fff;
-  box-shadow: 0 1px 2px rgba(37, 99, 235, 0.35);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
 }
 
 .btn.primary:hover:not(:disabled) {
-  background: linear-gradient(180deg, #2563eb 0%, var(--ux-accent-hover) 100%);
+  background: linear-gradient(180deg, #52525b 0%, var(--ux-ink) 100%);
 }
 
 .btn-capture {
@@ -365,7 +366,7 @@ html.in-side-panel .panel {
 }
 
 .btn.secondary:hover:not(:disabled) {
-  background: #f3f4f6;
+  background: #f4f4f5;
   border-color: var(--ux-border-strong);
 }
 
@@ -491,7 +492,7 @@ kbd {
   font-family: ui-monospace, Menlo, Consolas, monospace;
   color: var(--ux-text);
   background: var(--ux-accent-soft);
-  border: 1px solid #bfdbfe;
+  border: 1px solid #fecaca;
   border-radius: var(--ux-radius-sm);
   word-break: break-all;
 }
@@ -798,11 +799,11 @@ kbd {
   min-height: 1.25em;
   font-size: 12px;
   font-weight: 500;
-  color: var(--ux-accent);
+  color: var(--ux-accent-hover);
   padding: 8px 10px;
   border-radius: var(--ux-radius-sm);
   background: var(--ux-accent-soft);
-  border: 1px solid #bfdbfe;
+  border: 1px solid #fecaca;
 }
 
 .status:empty {
