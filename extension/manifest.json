@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "SnapThread",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "UX feedback on any HTTP/HTTPS page: capture elements or regions, snapshot CSS, queue notes, and post to GitHub PRs and issues.",
   "permissions": [
     "activeTab",

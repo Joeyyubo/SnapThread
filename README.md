@@ -6,7 +6,7 @@
 
 **SnapThread** is a Chrome extension (Manifest V3) for UX reviews on **any normal website** served over **HTTP or HTTPS**—production apps, docs, staging, localhost, internal tools, and more. Capture UI with context, queue findings in a session, and share them as Markdown—or post directly to **GitHub pull requests and issues** with images that render inline in the thread.
 
-Extension toolbar / Chrome Web Store icons live under [`extension/icons/`](extension/icons/) (`icon16.png` … `icon128.png`), wired in [`manifest.json`](extension/manifest.json). Regenerate them anytime with `python3 extension/scripts/generate_icons.py` (requires Pillow).
+Extension toolbar / Chrome Web Store icons live under [`extension/icons/`](extension/icons/) (`icon16.png` … `icon128.png`): soft violet–rose gradient with a **chat bubble** and **three dots** (thread / feedback). Wired in [`manifest.json`](extension/manifest.json). Regenerate with `python3 extension/scripts/generate_icons.py` (requires Pillow); small sizes are supersampled for smoother edges.
 
 ---
 
