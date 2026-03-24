@@ -1,0 +1,10 @@
+{
+  "name": "snapthread-extension",
+  "version": "0.2.0",
+  "private": true,
+  "description": "SnapThread — Chrome extension (Manifest V3) for UX capture and GitHub feedback",
+  "scripts": {
+    "icons": "python3 scripts/generate_icons.py"
+  },
+  "license": "MIT"
+}

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en" class="in-side-panel">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SnapThread</title>
+    <link rel="stylesheet" href="../popup/popup.css" />
+  </head>
+  <body>
+    <main class="panel">
+      <header class="head">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">
+            <svg
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect width="24" height="24" rx="6.25" fill="url(#stBrandGrad)" />
+              <rect
+                x="4.75"
+                y="6"
+                width="11.25"
+                height="9"
+                rx="1.35"
+                stroke="#fff"
+                stroke-width="1.35"
+                fill="none"
+                opacity="0.98"
+              />
+              <circle cx="17.35" cy="8.1" r="0.95" fill="#fff" />
+              <circle cx="17.35" cy="10.5" r="0.95" fill="#fff" />
+              <circle cx="17.35" cy="12.9" r="0.95" fill="#fff" />
+              <defs>
+                <linearGradient
+                  id="stBrandGrad"
+                  x1="3"
+                  y1="3"
+                  x2="21"
+                  y2="21"
+                  gradientUnits="userSpaceOnUse"
+                >
+                  <stop stop-color="#60a5fa" />
+                  <stop offset="0.52" stop-color="#2563eb" />
+                  <stop offset="1" stop-color="#1e40af" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </span>
+          <div class="brand-text">
+            <h1 class="title">SnapThread</h1>
+            <p class="tagline">Element or region capture — PRs &amp; issues</p>
+          </div>
+        </div>
+
+        <details class="help-disclosure">
+          <summary class="help-summary">How it works</summary>
+          <div class="help-body">
+            <p>
+              Lives in the browser side panel with the page. Capture a single
+              element or drag a rectangle across multiple components, add a note,
+              then post or copy Markdown. Drag the splitter if the page feels
+              tight. Pin this extension in the toolbar to reopen the panel
+              anytime.
+            </p>
+            <p class="help-muted">
+              Cross-origin iframes cannot be picked from the top page — open
+              that URL in its own tab. Paste a GitHub <strong>pull</strong> or
+              <strong>issue</strong> link (same comment API).
+            </p>
+          </div>
+        </details>
+      </header>
+
+      <section class="card card-pr">
+        <label class="field field-tight">
+          <span class="label">GitHub PR or issue URL</span>
+          <input
+            type="url"
+            id="prUrl"
+            class="input"
+            placeholder="https://github.com/org/repo/pull/42 or …/issues/42"
+            autocomplete="off"
+          />
+        </label>
+        <p class="field-hint field-hint-inline">
+          Enterprise examples:
+          <code>…/pull/1</code> or <code>…/issues/1</code>
+        </p>
+      </section>
+
+      <section class="card card-capture">
+        <p class="capture-tip">
+          Use the <strong>web page</strong> on the left, not this panel.
+          <strong>Element</strong>: hover for a blue outline and label.
+          <strong>Region</strong>: click-drag a dashed rectangle across any area.
+          While picking: <kbd>Esc</kbd> on the page <em>or</em> in this panel, or
+          <strong>Cancel capture</strong> below.
+        </p>
+        <div class="row row-tight row-capture-row">
+          <button type="button" id="btnPick" class="btn primary btn-capture">
+            Capture element
+          </button>
+          <button type="button" id="btnRegionPick" class="btn primary btn-capture">
+            Capture region
+          </button>
+        </div>
+        <div class="row row-tight row-cancel-row">
+          <button type="button" id="btnCancelPick" class="btn ghost btn-sm wide-cancel" hidden>
+            Cancel capture
+          </button>
+        </div>
+        <p id="pickHint" class="hint hint-compact" hidden>
+          Picking… click the page · <kbd>Esc</kbd> to cancel
+        </p>
+      </section>
+
+      <section id="draft" class="draft card card-draft" hidden>
+        <div class="draft-head">
+          <div class="section-label section-label-inline">
+            <span class="section-label-text">Current capture</span>
+          </div>
+          <button type="button" id="btnDiscardDraft" class="btn danger-link btn-sm">
+            Discard
+          </button>
+        </div>
+        <p class="draft-target" id="draftTarget"></p>
+        <div class="thumb-wrap">
+          <img id="draftImg" class="thumb" alt="Region screenshot" />
+        </div>
+        <div class="draft-actions row tight">
+          <button type="button" id="btnCopyDraftImg" class="btn secondary btn-sm">
+            Copy screenshot
+          </button>
+        </div>
+        <p class="meta" id="draftMeta"></p>
+        <label class="field">
+          <span class="label">Feedback</span>
+          <textarea
+            id="draftComment"
+            class="textarea"
+            rows="3"
+            placeholder="What should change? Be specific."
+          ></textarea>
+        </label>
+        <button type="button" id="btnAdd" class="btn primary wide">
+          Add to session
+        </button>
+      </section>
+
+      <section class="queue">
+        <div class="queue-head">
+          <h2 class="h2">Session</h2>
+          <span id="queueCount" class="badge">0</span>
+        </div>
+        <ul id="queueList" class="queue-list"></ul>
+        <div class="row stack stack-actions">
+          <button type="button" id="btnPostGh" class="btn outline wide">
+            Post to GitHub
+          </button>
+          <button type="button" id="btnCopyMd" class="btn secondary wide">
+            Copy Markdown
+          </button>
+          <button type="button" id="btnClear" class="btn-text-link">
+            Clear session
+          </button>
+        </div>
+        <p id="status" class="status" role="status"></p>
+      </section>
+
+      <footer class="foot">
+        <a class="link link-foot" href="#" id="openOptions"
+          >Settings · GitHub token</a
+        >
+      </footer>
+    </main>
+    <script src="../popup/popup.js" type="module"></script>
+  </body>
+</html>

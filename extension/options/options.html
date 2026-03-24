@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SnapThread — Options</title>
+    <style>
+      body {
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        max-width: 520px;
+        margin: 32px auto;
+        padding: 0 20px;
+        color: #1a1a1a;
+      }
+      h1 {
+        font-size: 20px;
+      }
+      p {
+        color: #5c5f66;
+        line-height: 1.5;
+        font-size: 14px;
+      }
+      label {
+        display: block;
+        font-weight: 600;
+        font-size: 12px;
+        margin: 16px 0 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: #3d4049;
+      }
+      input {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #d5d8de;
+        border-radius: 8px;
+        font: inherit;
+      }
+      button {
+        margin-top: 20px;
+        padding: 10px 16px;
+        border: none;
+        border-radius: 8px;
+        background: #2563eb;
+        color: #fff;
+        font: inherit;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #1d4ed8;
+      }
+      #msg {
+        margin-top: 12px;
+        font-size: 14px;
+        color: #2563eb;
+      }
+      #msg.err {
+        color: #b42318;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>SnapThread options</h1>
+    <p>
+      PR comments use a classic GitHub Personal Access Token. For least access,
+      enable <code>public_repo</code> for public repos, or <code>repo</code> for
+      private ones. The token is stored only in this extension&apos;s local
+      storage on your device.
+    </p>
+    <p>
+      <strong>Screenshots:</strong> The extension needs access to
+      <code>http://*</code> and <code>https://*</code> pages. If you see
+      &quot;Either the &apos;&lt;all_urls&gt;&apos; or &apos;activeTab&apos;
+      permission is required&quot;, reload this extension on
+      <code>chrome://extensions</code>, then <strong>refresh the tab</strong> you
+      are reviewing. That error usually means the page URL was not covered by an
+      older, narrower permission list (e.g. <code>http://192.168…</code>).
+    </p>
+    <p>
+      <strong>Post to GitHub with images:</strong> Comments use the same API for
+      PRs and issues. PNGs go under <code>.snapthread/pr-&lt;n&gt;/</code> on the
+      <strong>PR head branch</strong>, or <code>.snapthread/issue-&lt;n&gt;/</code>
+      on the repo <strong>default branch</strong> for plain issues. Your token
+      needs <code>repo</code> (classic) or fine-grained
+      <strong>Contents: Read and write</strong>. Fork PRs require push access to
+      the <strong>fork</strong> that owns the head branch.
+    </p>
+    <label for="displayName">Report byline</label>
+    <input
+      id="displayName"
+      type="text"
+      autocomplete="off"
+      placeholder="Your name"
+    />
+    <label for="token">GitHub token</label>
+    <input
+      id="token"
+      type="password"
+      autocomplete="off"
+      placeholder="ghp_… or fine-grained token"
+    />
+    <button type="button" id="save">Save</button>
+    <p id="msg" role="status"></p>
+    <script src="options.js"></script>
+  </body>
+</html>

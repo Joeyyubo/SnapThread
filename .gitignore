@@ -1,0 +1,16 @@
+.DS_Store
+Thumbs.db
+
+# Dependencies & vendored assets not used at runtime
+extension/node_modules/
+extension/vendor/
+
+# Editor / OS
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
