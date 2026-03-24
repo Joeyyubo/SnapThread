@@ -4,7 +4,7 @@
 
 # SnapThread
 
-**SnapThread** is a Chrome extension (Manifest V3) for UX reviews and design walkthroughs on **localhost**, **staging**, and **preview** URLs. Capture UI with context, queue findings in a session, and share them as Markdown—or post directly to **GitHub pull requests and issues** with images that render inline in the thread.
+**SnapThread** is a Chrome extension (Manifest V3) for UX reviews on **any normal website** served over **HTTP or HTTPS**—production apps, docs, staging, localhost, internal tools, and more. Capture UI with context, queue findings in a session, and share them as Markdown—or post directly to **GitHub pull requests and issues** with images that render inline in the thread.
 
 Extension toolbar / Chrome Web Store icons live under [`extension/icons/`](extension/icons/) (`icon16.png` … `icon128.png`), wired in [`manifest.json`](extension/manifest.json). Regenerate them anytime with `python3 extension/scripts/generate_icons.py` (requires Pillow).
 
@@ -12,6 +12,7 @@ Extension toolbar / Chrome Web Store icons live under [`extension/icons/`](exten
 
 ## Features
 
+- **Any page (HTTP/HTTPS)** — Capture and annotate wherever your team reviews UI, not limited to dev or preview hosts. Restricted browser pages (`chrome://`, the Chrome Web Store, `file://`, etc.) cannot run extension content scripts—open those cases in a supported context if needed.
 - **Side panel workflow** — Works alongside the page you are reviewing; pin the extension and keep the panel open while you click around.
 - **Capture element** — Hover highlight shows exactly what will be snapped; click to capture the element bounds plus a snapshot of **computed CSS** (key properties).
 - **Capture region** — Drag a rectangle to screenshot **across multiple components** (not limited to a single DOM node).
@@ -35,7 +36,7 @@ Optional: add your **GitHub Personal Access Token** under the extension **Option
 
 ## How to use
 
-1. Open the page you want to review (HTTP/HTTPS).
+1. Open the page you want to review (any **HTTP** or **HTTPS** tab you are allowed to browse).
 2. Open the SnapThread **side panel** (toolbar icon).
 3. Use **Capture element** or **Capture region** on the **web page** (not inside the panel).
 4. Add feedback in **Current capture**, then **Add to session**.
