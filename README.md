@@ -6,7 +6,7 @@
 
 **SnapThread** is a Chrome extension (Manifest V3) for UX reviews on **any normal website** served over **HTTP or HTTPS**—production apps, docs, staging, localhost, internal tools, and more. Capture UI with context, queue findings in a session, and share them as Markdown—or post directly to **GitHub pull requests and issues** with images that render inline in the thread.
 
-Extension toolbar / Chrome Web Store icons live under [`extension/icons/`](extension/icons/) (`icon16.png` … `icon128.png`): soft violet–rose gradient with a **chat bubble** and **three dots** (thread / feedback). Wired in [`manifest.json`](extension/manifest.json). Regenerate with `python3 extension/scripts/generate_icons.py` (requires Pillow); small sizes are supersampled for smoother edges.
+Extension toolbar / Chrome Web Store icons live under [`extension/icons/`](extension/icons/) (`icon16.png` … `icon128.png`), wired in [`manifest.json`](extension/manifest.json). The default mark is **dark charcoal → near-black** with a **light gray** viewfinder and **red** thread dots (community / dark-UI friendly). Regenerate anytime with `python3 extension/scripts/generate_icons.py` (requires Pillow).
 
 ---
 
@@ -18,7 +18,6 @@ Extension toolbar / Chrome Web Store icons live under [`extension/icons/`](exten
 - **Capture region** — Drag a rectangle to screenshot **across multiple components** (not limited to a single DOM node).
 - **Session queue** — Collapsible cards: collapsed view shows feedback + thumbnail; expand for full selector, page URL, and **Copy image**.
 - **Markdown export** — Copy a structured report (findings, selectors, CSS blocks, embedded or linked images).
-- **Copy for Google Docs** — Short plain-text export without Data-URL images. Pasting normal Markdown with inline `data:image/...` into Docs turns megabytes of base64 into hundreds of pages; use this copy mode for word processors, then paste screenshots via **Copy image** per session item.
 - **Post to GitHub** — Uploads PNGs to the repo (under `.snapthread/`) so comments use real `download_url` images (GitHub does not render huge Data URIs the same way).
 - **GitHub.com & Enterprise** — Supports `api.github.com` and Enterprise hosts using `/api/v3`.
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate SnapThread extension PNG icons (community-friendly chat + thread)."""
+"""Generate SnapThread extension PNG icons — dark community palette + red accent."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -9,30 +9,34 @@ from PIL import Image, ImageDraw
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "icons"
 
-# Warm diagonal gradient: soft violet → rose (open-source / community energy)
-C_TL = (196, 181, 253)  # violet-200
-C_BR = (244, 171, 199)  # pink-300
-C_ACCENT = (251, 207, 232)  # pink-200 highlight in corner
+# Dark background (charcoal → near black), community / dev-tool feel
+BG_TOP = (52, 52, 56)  # #343438
+BG_MID = (32, 32, 36)  # #202024
+BG_BOT = (14, 14, 16)  # #0e0e10
 
-WHITE = (255, 255, 255, 255)
-DOT_FILL = (139, 92, 246)  # violet-500 — readable on white bubble
+# Primary glyph on dark
+FRAME = (212, 212, 220, 255)  # zinc-300 — clear on black
+
+# Accent — thread / discussion
+ACCENT = (239, 68, 68, 255)  # red-500
 
 
-def diagonal_gradient_rounded_bg(size: int, radius: int) -> Image.Image:
+def gradient_rounded_bg(size: int, radius: int) -> Image.Image:
     img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
     px = img.load()
-    denom = max(2 * (size - 1), 1)
     for y in range(size):
+        t = y / max(size - 1, 1)
+        if t < 0.5:
+            u = t * 2
+            r = int(BG_TOP[0] + (BG_MID[0] - BG_TOP[0]) * u)
+            g = int(BG_TOP[1] + (BG_MID[1] - BG_TOP[1]) * u)
+            b = int(BG_TOP[2] + (BG_MID[2] - BG_TOP[2]) * u)
+        else:
+            u = (t - 0.5) * 2
+            r = int(BG_MID[0] + (BG_BOT[0] - BG_MID[0]) * u)
+            g = int(BG_MID[1] + (BG_BOT[1] - BG_MID[1]) * u)
+            b = int(BG_MID[2] + (BG_BOT[2] - BG_MID[2]) * u)
         for x in range(size):
-            t = (x + y) / denom
-            r = int(C_TL[0] + (C_BR[0] - C_TL[0]) * t)
-            g = int(C_TL[1] + (C_BR[1] - C_TL[1]) * t)
-            b = int(C_TL[2] + (C_BR[2] - C_TL[2]) * t)
-            # Slight warmth bottom-right
-            k = (x / max(size - 1, 1)) * (y / max(size - 1, 1))
-            r = min(255, r + int((C_ACCENT[0] - r) * 0.15 * k))
-            g = min(255, g + int((C_ACCENT[1] - g) * 0.15 * k))
-            b = min(255, b + int((C_ACCENT[2] - b) * 0.15 * k))
             px[x, y] = (r, g, b, 255)
     mask = Image.new("L", (size, size), 0)
     md = ImageDraw.Draw(mask)
@@ -44,89 +48,47 @@ def diagonal_gradient_rounded_bg(size: int, radius: int) -> Image.Image:
 
 def draw_symbol(draw: ImageDraw.ImageDraw, size: int) -> None:
     s = size / 128.0
-
-    # Main "message bubble" (pill) — conversation / feedback
-    pad_x = max(int(20 * s), 2)
-    pad_y = max(int(36 * s), 2)
-    bx2 = size - pad_x
-    by2 = size - pad_y
-    bw = bx2 - pad_x
-    bh = max(int(44 * s), 6)
-    bx1 = pad_x
-    by1 = (size - bh) // 2
-    rr = min(bh // 2, max(int(18 * s), 2))
-
-    if size >= 20:
+    margin = max(int(20 * s), 2)
+    lw = max(int(round(3.0 * s)), 1)
+    if size <= 16:
+        lw = 1
+    inner = size - 2 * margin
+    rr = max(int(8 * s), 1)
+    x1, y1 = margin, margin
+    x2, y2 = margin + inner, margin + int(inner * 0.78)
+    if size >= 24:
         draw.rounded_rectangle(
-            (bx1, by1, bx1 + bw, by1 + bh),
-            radius=rr,
-            fill=WHITE,
+            (x1, y1, x2, y2), radius=rr, outline=FRAME[:3], width=lw
         )
     else:
-        # 16px: compact white capsule
-        draw.rounded_rectangle(
-            (2, 5, size - 2, size - 5),
-            radius=4,
-            fill=WHITE,
-        )
-        bx1, by1 = 2, 5
-        bw, bh = size - 4, size - 10
+        draw.rectangle((x1, y1, x2, y2), outline=FRAME[:3], width=lw)
 
-    # Small tail hint (community chat) — only when enough pixels
-    if size >= 48:
-        tail_w = max(int(10 * s), 3)
-        tail_h = max(int(8 * s), 3)
-        tx = bx1 + max(int(14 * s), 4)
-        ty = by1 + bh - max(int(4 * s), 1)
-        draw.polygon(
-            [
-                (tx, ty),
-                (tx + tail_w, ty),
-                (tx + tail_w // 2, ty + tail_h),
-            ],
-            fill=WHITE,
-        )
-
-    # Three dots = thread / ongoing discussion
-    cx_mid = bx1 + bw // 2
-    cy_dots = by1 + bh // 2
-    spacing = max(int(10 * s), 2)
-    dot_r = max(int(4.5 * s), 1)
+    # Thread dots — red accent
+    dot_r = max(int(3.0 * s), 1)
     if size <= 16:
         dot_r = 1
-        spacing = 3
-        cx_mid = size // 2
-        cy_dots = size // 2
-
-    for off in (-1, 0, 1):
-        cx = cx_mid + off * spacing
+    cx = x2 + max(int(5 * s), 1)
+    if cx + dot_r >= size - 1:
+        cx = x2 - max(int(4 * s), 1)
+    ys = [y1 + int((y2 - y1) * 0.25), (y1 + y2) // 2, y1 + int((y2 - y1) * 0.75)]
+    for cy in ys:
         draw.ellipse(
-            (cx - dot_r, cy_dots - dot_r, cx + dot_r, cy_dots + dot_r),
-            fill=DOT_FILL,
+            (cx - dot_r, cy - dot_r, cx + dot_r, cy + dot_r), fill=ACCENT[:3]
         )
 
 
 def render_icon(size: int) -> Image.Image:
     radius = max(int(size * 0.24), 2)
-    img = diagonal_gradient_rounded_bg(size, radius)
+    img = gradient_rounded_bg(size, radius)
     draw = ImageDraw.Draw(img)
     draw_symbol(draw, size)
     return img
 
 
-def render_icon_smooth(size: int) -> Image.Image:
-    """Render at 4× then downscale for anti-aliased edges (Chrome toolbar sizes)."""
-    if size >= 128:
-        return render_icon(size)
-    scale = 4
-    big = render_icon(size * scale)
-    return big.resize((size, size), Image.Resampling.LANCZOS)
-
-
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     for name, dim in [("icon16", 16), ("icon32", 32), ("icon48", 48), ("icon128", 128)]:
-        im = render_icon_smooth(dim)
+        im = render_icon(dim)
         path = OUT / f"{name}.png"
         im.save(path, "PNG")
         print("Wrote", path)
