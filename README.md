@@ -18,6 +18,7 @@ Extension toolbar / Chrome Web Store icons live under [`extension/icons/`](exten
 - **Capture region** — Drag a rectangle to screenshot **across multiple components** (not limited to a single DOM node).
 - **Session queue** — Collapsible cards: collapsed view shows feedback + thumbnail; expand for full selector, page URL, and **Copy image**.
 - **Markdown export** — Copy a structured report (findings, selectors, CSS blocks, embedded or linked images).
+- **Copy for Google Docs** — Short plain-text export without Data-URL images. Pasting normal Markdown with inline `data:image/...` into Docs turns megabytes of base64 into hundreds of pages; use this copy mode for word processors, then paste screenshots via **Copy image** per session item.
 - **Post to GitHub** — Uploads PNGs to the repo (under `.snapthread/`) so comments use real `download_url` images (GitHub does not render huge Data URIs the same way).
 - **GitHub.com & Enterprise** — Supports `api.github.com` and Enterprise hosts using `/api/v3`.
 

@@ -215,6 +215,52 @@ function formatMarkdownReport(items, displayName, imageOpts = {}) {
   return [header, "", ...blocks].join("\n");
 }
 
+const PASTE_FRIENDLY_SELECTOR_MAX = 220;
+const PASTE_FRIENDLY_CSS_MAX = 900;
+
+function truncatePlain(s, max) {
+  const t = String(s || "");
+  if (t.length <= max) return t;
+  return `${t.slice(0, max - 1)}…`;
+}
+
+/**
+ * Short plain-text report for Google Docs, Word, email, etc.
+ * Omits Data-URL images (they explode page count when pasted as text).
+ */
+function formatPasteFriendlyReport(items, displayName) {
+  const name = displayName || "UX Reviewer";
+  const lines = [
+    `UX review — ${name}`,
+    `${items.length} finding(s). Screenshots are NOT pasted here (they would be huge as text). For each item, use SnapThread → Session → Copy image, then paste into your document.`,
+    "",
+  ];
+  items.forEach((it, i) => {
+    const n = i + 1;
+    lines.push(`— ${n}. ${it.comment || "(no description)"}`);
+    lines.push(`  Page: ${it.pageUrl || "—"}`);
+    lines.push(
+      `  Target: ${truncatePlain(it.elementLabel || it.selector || "—", 100)}`
+    );
+    lines.push(
+      `  Selector: ${truncatePlain(it.selector || "—", PASTE_FRIENDLY_SELECTOR_MAX)}`
+    );
+    const css = stylesToCssBlock(it.styles).trim();
+    if (css) {
+      const cut =
+        css.length > PASTE_FRIENDLY_CSS_MAX
+          ? `${css.slice(0, PASTE_FRIENDLY_CSS_MAX)}\n/* …truncated (${css.length} chars total; use Copy Markdown for full CSS) */`
+          : css;
+      lines.push("  CSS (excerpt):");
+      cut.split("\n").forEach((ln) => lines.push(`    ${ln}`));
+    } else {
+      lines.push("  CSS: (none — e.g. region capture)");
+    }
+    lines.push("");
+  });
+  return lines.join("\n");
+}
+
 function formatFetchError(bodyText, statusLine) {
   if (!bodyText) return statusLine || "Request failed";
   try {
@@ -636,7 +682,8 @@ async function init() {
     ]);
     const name = (displayName && displayName.trim()) || "UX Reviewer";
     let md = formatMarkdownReport(list, name, { images: "embed" });
-    let note = "Markdown copied (with inline screenshots where size allows).";
+    let note =
+      "Markdown copied (inline screenshots where size allows). For Google Docs, use Copy for Google Docs — Data URLs paste as giant text.";
     if (md.length > 1_800_000) {
       md = formatMarkdownReport(list, name, { images: "omit" });
       note =
@@ -653,6 +700,27 @@ async function init() {
       } catch {
         setStatus("Copy failed. Check clipboard permissions.", true);
       }
+    }
+  });
+
+  $("btnCopyDocs").addEventListener("click", async () => {
+    const list = await loadQueue();
+    if (!list.length) {
+      setStatus("Nothing to copy.", true);
+      return;
+    }
+    const { [STORAGE.displayName]: displayName } = await storageGet([
+      STORAGE.displayName,
+    ]);
+    const name = (displayName && displayName.trim()) || "UX Reviewer";
+    const text = formatPasteFriendlyReport(list, name);
+    try {
+      await navigator.clipboard.writeText(text);
+      setStatus(
+        "Docs-friendly text copied — paste into Google Docs, then add images via Session → Copy image per item."
+      );
+    } catch {
+      setStatus("Copy failed. Check clipboard permissions.", true);
     }
   });
 

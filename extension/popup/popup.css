@@ -291,6 +291,10 @@ html.in-side-panel .panel {
   gap: 8px;
 }
 
+.stack-actions .btn.secondary.wide {
+  font-size: 12px;
+}
+
 .btn-text-link {
   background: transparent;
   border: none;
