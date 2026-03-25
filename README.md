@@ -4,7 +4,7 @@
 
 # SnapThread
 
-**SnapThread** is a Chrome extension (Manifest V3) for UX reviews on **any normal website** served over **HTTP or HTTPS**—production apps, docs, staging, localhost, internal tools, and more. Capture UI with context, queue findings in a session, and share them as Markdown—or post directly to **GitHub pull requests and issues** with images that render inline in the thread.
+**SnapThread** is a Chrome extension (Manifest V3) for **UI review and design walkthroughs** on **any normal website** over **HTTP or HTTPS**—production apps, docs, staging, localhost, internal tools, and more. Capture UI with context, queue findings in a session, and share them as Markdown—or post directly to **GitHub pull requests and issues** with images that render inline in the thread.
 
 Extension toolbar / Chrome Web Store icons live under [`extension/icons/`](extension/icons/) (`icon16.png` … `icon128.png`), wired in [`manifest.json`](extension/manifest.json). Product branding is the **SnapThread** tile from `extension/assets/snapthread-brand-source.png` (teal–lime mark on a dark card, with Chrome + GitHub corner marks). Toolbar icons are auto-cropped from that hero:
 
