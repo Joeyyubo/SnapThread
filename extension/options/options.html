@@ -29,12 +29,17 @@
         letter-spacing: 0.04em;
         color: #3d4049;
       }
-      input {
+      input,
+      textarea {
         width: 100%;
         padding: 10px 12px;
         border: 1px solid #d5d8de;
         border-radius: 8px;
         font: inherit;
+      }
+      textarea {
+        resize: vertical;
+        min-height: 72px;
       }
       button {
         margin-top: 20px;
@@ -85,6 +90,25 @@
       are reviewing. That error usually means the page URL was not covered by an
       older, narrower permission list (e.g. <code>http://192.168…</code>).
     </p>
+    <p>
+      <strong>Preview environment (optional):</strong> The side panel button
+      <em>一键启动预览环境</em> opens a preview URL in a new tab. The extension
+      does not run your app—it only builds a URL from the pattern below. Use
+      placeholders <code>{owner}</code>, <code>{repo}</code>,
+      <code>{branch}</code> (from the API: default branch or PR head),
+      <code>{number}</code> / <code>{pr}</code> (issue or PR number; empty for a
+      plain repo URL). Example Netlify:
+      <code>https://deploy-preview-{number}--my-site.netlify.app/</code>
+      Leave blank to try GitHub Pages <code>https://owner.github.io/repo/</code>
+      (often 404 if you do not use Pages).
+    </p>
+    <label for="previewTemplate">Preview URL template</label>
+    <textarea
+      id="previewTemplate"
+      rows="3"
+      autocomplete="off"
+      placeholder="https://deploy-preview-{number}--project.netlify.app/"
+    ></textarea>
     <p>
       <strong>Post to GitHub with images:</strong> Comments use the same API for
       PRs and issues. PNGs go under <code>.snapthread/pr-&lt;n&gt;/</code> on the

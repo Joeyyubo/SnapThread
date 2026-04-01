@@ -260,6 +260,28 @@ html.in-side-panel .panel {
   border: 1px solid var(--ux-border);
 }
 
+.preview-env-btn {
+  margin-top: 10px;
+}
+
+.preview-env-hint {
+  margin-top: 8px;
+  margin-bottom: 0;
+  font-size: 10px;
+  line-height: 1.45;
+  color: var(--ux-text-muted);
+}
+
+.preview-env-hint a {
+  color: var(--ux-accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.preview-env-hint a:hover {
+  text-decoration: underline;
+}
+
 .row {
   display: flex;
   gap: 8px;

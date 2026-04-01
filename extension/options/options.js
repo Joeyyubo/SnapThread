@@ -1,6 +1,7 @@
 const STORAGE = {
   token: "ux_commenter_github_token",
   displayName: "ux_commenter_display_name",
+  previewTemplate: "ux_commenter_preview_template",
 };
 
 const $ = (id) => document.getElementById(id);
@@ -9,12 +10,16 @@ async function load() {
   const data = await chrome.storage.local.get([
     STORAGE.token,
     STORAGE.displayName,
+    STORAGE.previewTemplate,
   ]);
   if (data[STORAGE.displayName]) {
     $("displayName").value = data[STORAGE.displayName];
   }
   if (data[STORAGE.token]) {
     $("token").value = data[STORAGE.token];
+  }
+  if (data[STORAGE.previewTemplate] != null) {
+    $("previewTemplate").value = data[STORAGE.previewTemplate];
   }
 }
 
@@ -25,6 +30,7 @@ $("save").addEventListener("click", async () => {
   await chrome.storage.local.set({
     [STORAGE.displayName]: $("displayName").value.trim() || "UX Reviewer",
     [STORAGE.token]: $("token").value.trim(),
+    [STORAGE.previewTemplate]: $("previewTemplate").value.trim(),
   });
   msg.textContent = "Saved.";
 });
