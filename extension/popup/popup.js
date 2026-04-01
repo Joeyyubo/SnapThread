@@ -3,7 +3,6 @@ const STORAGE = {
   prUrl: "ux_commenter_pr_url",
   token: "ux_commenter_github_token",
   displayName: "ux_commenter_display_name",
-  previewTemplate: "ux_commenter_preview_template",
 };
 
 /** Inline data-URL images larger than this are omitted from Markdown. */
@@ -50,136 +49,106 @@ function parseGithubThreadUrl(url) {
 }
 
 /**
- * Repo home or subpaths except /pull/n and /issues/n (e.g. …/org/repo or …/tree/main).
+ * Repository root, pull request, or issue URL — for opening a cloud dev preview.
  */
-function parseGithubRepoHome(url) {
-  if (!url || typeof url !== "string") return null;
-  let u;
-  try {
-    u = new URL(url.trim());
-  } catch {
-    return null;
+function parseGithubPreviewContext(raw) {
+  if (!raw || typeof raw !== "string") return null;
+  const u = raw.trim();
+  const thread = parseGithubThreadUrl(u);
+  if (thread) {
+    const kind = /\/pull\/\d+/.test(u) ? "pull" : "issue";
+    return { ...thread, kind };
   }
-  if (u.protocol !== "https:" && u.protocol !== "http:") return null;
-  let host = u.hostname.toLowerCase();
+  const repoRe = /^https:\/\/([^/]+)\/([^/]+)\/([^/]+)\/?(?:$|[?#])/i;
+  const m = u.match(repoRe);
+  if (!m) return null;
+  let host = m[1].toLowerCase();
   if (host === "www.github.com") host = "github.com";
-  const parts = u.pathname.split("/").filter(Boolean);
-  if (parts.length < 2) return null;
-  const owner = parts[0];
-  const repo = parts[1].replace(/\.git$/, "");
-  if (
-    parts.length >= 4 &&
-    parts[2] === "pull" &&
-    /^\d+$/.test(parts[3])
-  ) {
-    return null;
-  }
-  if (
-    parts.length >= 4 &&
-    parts[2] === "issues" &&
-    /^\d+$/.test(parts[3])
-  ) {
-    return null;
-  }
+  const owner = m[2];
+  const repo = m[3];
+  const reservedOwners = new Set([
+    "settings",
+    "apps",
+    "orgs",
+    "topics",
+    "collections",
+    "marketplace",
+    "sponsors",
+    "explore",
+  ]);
+  if (reservedOwners.has(owner)) return null;
+  if (repo === "pull" || repo === "issues" || repo === "compare") return null;
   const apiBase =
     host === "github.com"
       ? "https://api.github.com"
       : `https://${host}/api/v3`;
-  return { host, owner, repo, apiBase };
+  return { host, owner, repo, apiBase, kind: "repo" };
 }
 
-function parseGithubInput(url) {
-  const thread = parseGithubThreadUrl(url);
-  if (thread) return { kind: "thread", ...thread };
-  const repo = parseGithubRepoHome(url);
-  if (repo) return { kind: "repo", ...repo };
-  return null;
-}
-
-function GH_HEADERS_OPT(token) {
-  const h = {
-    Accept: "application/vnd.github+json",
-    "X-GitHub-Api-Version": "2022-11-28",
-  };
-  if (token) h.Authorization = `Bearer ${token}`;
-  return h;
-}
-
-/**
- * Resolve branch + issue/PR number string for preview URL placeholders.
- */
-async function resolvePreviewContext(parsed, token) {
-  const { apiBase, owner, repo } = parsed;
-  const tok = token && String(token).trim();
-
-  if (parsed.kind === "repo") {
-    const res = await fetch(`${apiBase}/repos/${owner}/${repo}`, {
-      headers: GH_HEADERS_OPT(tok),
-    });
-    if (!res.ok) {
-      const t = await res.text();
-      throw new Error(formatFetchError(t, res.statusText));
-    }
-    const data = await res.json();
-    const branch = data.default_branch || "main";
-    return { owner, repo, branch, number: "", pr: "" };
-  }
-
-  const num = parsed.number;
-  const res = await fetch(
-    `${apiBase}/repos/${owner}/${repo}/issues/${num}`,
-    { headers: GH_HEADERS_OPT(tok) }
-  );
-  if (!res.ok) {
-    const t = await res.text();
-    throw new Error(formatFetchError(t, res.statusText));
-  }
-  const issue = await res.json();
-  const isPullRequest = Boolean(issue.pull_request?.url);
-  if (isPullRequest) {
-    const head = await fetchPullRequestHead(apiBase, owner, repo, num, tok);
+async function buildCloudPreviewUrl(inputUrl) {
+  const ctx = parseGithubPreviewContext(inputUrl);
+  if (!ctx) {
     return {
-      owner,
-      repo,
-      branch: head.branch,
-      number: String(num),
-      pr: String(num),
+      ok: false,
+      error: "Enter a GitHub repository, pull request, or issue URL.",
     };
   }
-  const repoRes = await fetch(`${apiBase}/repos/${owner}/${repo}`, {
-    headers: GH_HEADERS_OPT(tok),
-  });
-  if (!repoRes.ok) {
-    const t = await repoRes.text();
-    throw new Error(formatFetchError(t, repoRes.statusText));
+
+  if (ctx.kind === "pull" && ctx.host === "github.com") {
+    return {
+      ok: true,
+      url: `https://pr.new/github.com/${ctx.owner}/${ctx.repo}/pull/${ctx.number}`,
+    };
   }
-  const repoData = await repoRes.json();
-  const branch = repoData.default_branch || "main";
+
+  if (ctx.kind === "pull") {
+    const { [STORAGE.token]: token } = await storageGet([STORAGE.token]);
+    if (!token) {
+      return {
+        ok: false,
+        error:
+          "Add a GitHub token in Options to open Enterprise pull request previews.",
+      };
+    }
+    try {
+      const head = await fetchPullRequestHead(
+        ctx.apiBase,
+        ctx.owner,
+        ctx.repo,
+        ctx.number,
+        token
+      );
+      const b = encodeURIComponent(head.branch);
+      return {
+        ok: true,
+        url: `https://stackblitz.com/github/${head.headOwner}/${head.headRepo}/tree/${b}`,
+      };
+    } catch (e) {
+      return {
+        ok: false,
+        error: e.message || "Could not resolve PR branch.",
+      };
+    }
+  }
+
+  if (ctx.host === "github.com") {
+    return {
+      ok: true,
+      url: `https://pr.new/github.com/${ctx.owner}/${ctx.repo}`,
+    };
+  }
+
   return {
-    owner,
-    repo,
-    branch,
-    number: String(num),
-    pr: String(num),
+    ok: true,
+    url: `https://stackblitz.com/github/${ctx.owner}/${ctx.repo}`,
   };
 }
 
-const PREVIEW_PLACEHOLDER_SAFE = new Set([
-  "owner",
-  "repo",
-  "branch",
-  "number",
-  "pr",
-]);
-
-function applyPreviewTemplate(template, ctx) {
-  const raw = String(template || "").trim();
-  if (!raw) return "";
-  return raw.replace(/\{([a-z]+)\}/gi, (_, key) => {
-    const k = key.toLowerCase();
-    if (!PREVIEW_PLACEHOLDER_SAFE.has(k)) return `{${key}}`;
-    return String(ctx[k] ?? "");
-  });
+function syncPreviewLaunchUi() {
+  const wrap = $("previewLaunchWrap");
+  if (!wrap) return;
+  const ctx = parseGithubPreviewContext($("prUrl").value.trim());
+  wrap.hidden = !ctx;
 }
 
 function stylesToCssBlock(styles) {
@@ -205,11 +174,9 @@ function dataUrlToBase64(dataUrl) {
  * Returns { headOwner, headRepo, branch } for Contents API (supports cross-repo PRs).
  */
 async function fetchPullRequestHead(apiBase, owner, repo, prNumber, token) {
-  const headers =
-    token && String(token).trim() ? GH_HEADERS(token) : GH_HEADERS_OPT("");
   const res = await fetch(
     `${apiBase}/repos/${owner}/${repo}/pulls/${prNumber}`,
-    { headers }
+    { headers: GH_HEADERS(token) }
   );
   if (!res.ok) {
     const t = await res.text();
@@ -553,58 +520,30 @@ async function init() {
 
   const data = await storageGet([STORAGE.prUrl, STORAGE.queue]);
   if (data[STORAGE.prUrl]) $("prUrl").value = data[STORAGE.prUrl];
+  syncPreviewLaunchUi();
   renderQueue(await loadQueue());
   await refreshDraftFromStorage();
 
   async function persistPrUrl() {
     await storageSet({ [STORAGE.prUrl]: $("prUrl").value.trim() });
   }
-  $("prUrl").addEventListener("change", persistPrUrl);
+  $("prUrl").addEventListener("change", () => {
+    syncPreviewLaunchUi();
+    persistPrUrl();
+  });
   $("prUrl").addEventListener("blur", persistPrUrl);
+  $("prUrl").addEventListener("input", syncPreviewLaunchUi);
 
-  $("btnOpenPreview")?.addEventListener("click", async () => {
+  $("btnLaunchPreview").addEventListener("click", async () => {
     setStatus("");
-    const rawUrl = $("prUrl").value.trim();
-    const parsed = parseGithubInput(rawUrl);
-    if (!parsed) {
-      setStatus(
-        "Enter a valid GitHub repo, pull request, or issue URL.",
-        true
-      );
+    const input = $("prUrl").value.trim();
+    const r = await buildCloudPreviewUrl(input);
+    if (!r.ok) {
+      setStatus(r.error, true);
       return;
     }
-    const { [STORAGE.token]: token, [STORAGE.previewTemplate]: tmpl } =
-      await storageGet([STORAGE.token, STORAGE.previewTemplate]);
-    const finalTemplate = (tmpl && String(tmpl).trim()) || "";
-    try {
-      const ctx = await resolvePreviewContext(parsed, token);
-      let url;
-      if (finalTemplate) {
-        url = applyPreviewTemplate(finalTemplate, ctx);
-      } else {
-        url = `https://${ctx.owner}.github.io/${ctx.repo}/`;
-      }
-      if (!url || !/^https?:\/\//i.test(url)) {
-        setStatus("Preview template produced an invalid URL.", true);
-        return;
-      }
-      await chrome.tabs.create({ url, active: true });
-      setStatus(
-        finalTemplate
-          ? "Preview opened in a new tab."
-          : "Opened GitHub Pages URL (configure Options → preview template if this 404s)."
-      );
-    } catch (e) {
-      setStatus(
-        `${e.message || "Could not resolve preview."} Use a GitHub token in Options for private repos.`,
-        true
-      );
-    }
-  });
-
-  $("openOptionsPreview")?.addEventListener("click", (e) => {
-    e.preventDefault();
-    chrome.runtime.openOptionsPage();
+    await chrome.tabs.create({ url: r.url });
+    setStatus("Opening cloud preview in a new tab…");
   });
 
   async function startCaptureOnPage(tabId, messageType, startedHint, statusLine) {

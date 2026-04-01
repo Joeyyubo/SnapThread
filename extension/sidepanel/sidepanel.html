@@ -47,36 +47,30 @@
 
       <section class="card card-pr">
         <label class="field field-tight">
-          <span class="label">GitHub repo, PR, or issue URL</span>
+          <span class="label">GitHub PR or issue URL</span>
           <input
             type="url"
             id="prUrl"
             class="input"
-            placeholder="https://github.com/org/repo or …/pull/42 or …/issues/42"
+            placeholder="https://github.com/org/repo/pull/42, …/issues/42, or …/org/repo"
             autocomplete="off"
           />
         </label>
         <p class="field-hint field-hint-inline">
-          Examples:
-          <code>…/org/repo</code>,
-          <code>…/pull/1</code>,
-          <code>…/issues/1</code>
+          Enterprise examples:
+          <code>…/pull/1</code> or <code>…/issues/1</code>
         </p>
-        <button
-          type="button"
-          id="btnOpenPreview"
-          class="btn secondary wide preview-env-btn"
-          title="Opens preview URL (see Settings for template)"
-        >
-          一键启动预览环境
-        </button>
-        <p class="field-hint field-hint-inline preview-env-hint">
-          Opens your preview URL in a new tab. Configure the URL pattern in
-          <a href="#" id="openOptionsPreview">Settings</a>
-          (placeholders <code>{owner}</code> <code>{repo}</code> <code>{branch}</code>
-          <code>{number}</code>). If unset, tries GitHub Pages
-          <code>https://owner.github.io/repo/</code>.
-        </p>
+        <div id="previewLaunchWrap" class="preview-launch-wrap" hidden>
+          <button type="button" id="btnLaunchPreview" class="btn secondary wide">
+            Launch preview environment
+          </button>
+          <p class="field-hint preview-launch-hint">
+            Opens <strong>StackBlitz</strong> in a new tab. GitHub.com pull
+            requests use one-click PR import; repository or issue URLs open the
+            default branch. Enterprise PR previews need your token in Options.
+            You may run <code>npm run dev</code> there for a live UI.
+          </p>
+        </div>
       </section>
 
       <section class="card card-capture">

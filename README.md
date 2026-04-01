@@ -24,9 +24,9 @@ Adjust crop ratios in `import_brand_icons.py` if you replace the source art. The
 - **Capture region** — Drag a rectangle to screenshot **across multiple components** (not limited to a single DOM node).
 - **Session queue** — Collapsible cards: collapsed view shows feedback + thumbnail; expand for full selector, page URL, and **Copy image**.
 - **Markdown export** — Copy a structured report (findings, selectors, CSS blocks, embedded or linked images).
-- **Preview environment** — After pasting a **repo**, **PR**, or **issue** URL, use **一键启动预览环境** to open a preview tab. You configure a **URL template** in Options (e.g. Netlify/Vercel deploy URLs with `{owner}`, `{repo}`, `{branch}`, `{number}`). The extension does not host your app; it only resolves branch/number via the GitHub API and opens the built URL. If the template is empty, it falls back to `https://owner.github.io/repo/`.
 - **Post to GitHub** — Uploads PNGs to the repo (under `.snapthread/`) so comments use real `download_url` images (GitHub does not render huge Data URIs the same way).
 - **GitHub.com & Enterprise** — Supports `api.github.com` and Enterprise hosts using `/api/v3`.
+- **Cloud preview** — With a **repo**, **pull**, or **issue** URL in the GitHub field, **Launch preview environment** opens **StackBlitz Codeflow** via **pr.new** on GitHub.com (or **stackblitz.com** on Enterprise). Private Enterprise PRs need a token to resolve the head branch. This is a third-party cloud workspace—you may still need to run dev commands there.
 
 ---
 
